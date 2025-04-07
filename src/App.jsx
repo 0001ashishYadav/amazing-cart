@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router";
 import HomePage from "./pages/Home";
 import NotFoundPage from "./pages/NotFound";
-import Product from "./pages/products/product";
+import Product from "./pages/products/Product";
 import SideBar from "./components/SideBar";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import Setting from "./pages/Setting";
 
 function App() {
-  // const [isLarge, setIsLarge] = useState();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
