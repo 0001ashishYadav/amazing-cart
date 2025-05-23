@@ -1,11 +1,8 @@
-"use client";
-
 import { apiClient } from "../utils/apiClient";
 import { getCookie, setCookie } from "../utils/cookies";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext({});
-
 export const AuthContextProvider = ({ children }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [isLogin, setIsLogin] = useState(() => {

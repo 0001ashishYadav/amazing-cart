@@ -1,7 +1,19 @@
+import { LogOut } from "lucide-react";
 import React from "react";
 import { NavLink } from "react-router";
+import { deleteCookie } from "../utils/cookies";
+import { useAuthContext } from "../context/AuthContext";
 
 function SideBar({ isShow }) {
+  const { setIsLogin } = useAuthContext();
+
+  const handleLogout = () => {
+    deleteCookie("access_token");
+    deleteCookie("refresh_token");
+    setIsLogin(false);
+    window.location.reload();
+  };
+
   return (
     <>
       <section
@@ -47,6 +59,13 @@ function SideBar({ isShow }) {
             Setting
           </NavLink>
         </nav>
+
+        <button
+          onClick={handleLogout}
+          className="border-t-2 border-white/30 flex justify-between items-center text-xl text-center h-16 px-3 absolute bottom-0 left-0 right-0"
+        >
+          <span> Logout</span> <LogOut />
+        </button>
       </section>
     </>
   );

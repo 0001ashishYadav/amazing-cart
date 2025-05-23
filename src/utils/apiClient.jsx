@@ -1,5 +1,7 @@
 import { getCookie } from "./cookies";
 
+export const baseURL = "https://api.store.inflection.org.in";
+
 export const apiClient = async (url, method, body = null, tokenName = "") => {
   const accessToken = getCookie("access_token");
 

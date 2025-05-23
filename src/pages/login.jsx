@@ -1,11 +1,98 @@
 import React, { useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
+import { validateEmail, validatePassword } from "../utils/validateFormFields";
+import { apiClient } from "../utils/apiClient";
+import { setCookie } from "../utils/cookies";
+import { useNavigate } from "react-router";
 
 const LoginPage = () => {
-  const { isLogin } = useAuthContext;
+  const { isLogin, setIsLogin } = useAuthContext();
+  const navigate = useNavigate();
+  console.log(isLogin);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const [validationError, setValidationError] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [error, setError] = useState("");
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+    setError("");
+    setValidationError({ email: "", password: "" });
+    if (!validateEmail(email)) {
+      setValidationError((prev) => ({
+        ...prev,
+        email: "Please enter a valid email address",
+      }));
+      setIsLoading(false);
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setValidationError((prev) => ({
+        ...prev,
+        password:
+          "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number and one special character",
+      }));
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const data = await apiClient.login({ email, password });
+
+      console.log(data);
+
+      if (data.error) {
+        alert(data.message);
+        setError(data.message);
+        setIsLoading(false);
+        return;
+      }
+
+      const {
+        access_token,
+        refresh_token,
+        refresh_token_expires_at,
+        access_token_expires_at,
+      } = data;
+
+      const currentMilies = Date.now();
+      const accesTokenExpiresAt = Date.parse(access_token_expires_at);
+      const refreshTokenExpiresAt = Date.parse(refresh_token_expires_at);
+
+      setCookie(
+        "access_token",
+        access_token,
+        parseInt(`${(accesTokenExpiresAt - currentMilies) / 1000}`)
+      );
+      setCookie(
+        "refresh_token",
+        refresh_token,
+        parseInt(`${(refreshTokenExpiresAt - currentMilies) / 1000}`)
+      );
+      setIsLogin(true);
+      setEmail("");
+      setPassword("");
+      setValidationError({ email: "", password: "" });
+      setError("");
+      setIsLoading(false);
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+      setError("Something went wrong. Please try again later.");
+      setValidationError({ email: "", password: "" });
+    }
+  };
 
   return (
     // <section classNameName="bg-gray-100 min-h-screen flex box-border justify-center items-center">
@@ -117,13 +204,17 @@ const LoginPage = () => {
     <>
       {!isLogin && <p>Please Login .....</p>}
       <div className="flex items-center justify-center min-h-screen ">
-        <form className="w-full max-w-lg px-10 py-8 mx-auto bg-white rounded-lg shadow-2xl from-red-200 via-red-300 to-red-200 bg-gradient-to-br">
+        <form
+          onSubmit={handleLogin}
+          className="w-full max-w-lg px-10 py-8 mx-auto bg-white rounded-lg shadow-2xl from-red-200 via-red-300 to-red-200 bg-gradient-to-br"
+        >
           <div className="max-w-md mx-auto space-y-3 ">
             <h3 className="text-lg font-semibold">&#128540; My Account</h3>
             <div>
               <label className="block py-1">Your email</label>
               <input
                 type="email"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="border bg-white w-full py-2 px-2 rounded shadow border-none outline-none font-mono"
@@ -136,6 +227,7 @@ const LoginPage = () => {
               <label className="block py-1 ">Password</label>
               <input
                 type="password"
+                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="border bg-white w-full py-2 px-2 rounded shadow border-none outline-none font-mono"

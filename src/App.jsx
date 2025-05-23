@@ -11,26 +11,6 @@ import LoginPage from "./pages/login";
 import ProtectetRoute from "./components/ProtectetRoute";
 
 function App() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 768) {
-        setIsSidebarOpen(true);
-      } else {
-        setIsSidebarOpen(false);
-      }
-    };
-
-    // Run on initial render
-    handleResize();
-
-    // Add event listener
-    window.addEventListener("resize", handleResize);
-
-    // Clean up on unmount
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
   return (
     <>
       <Routes>
