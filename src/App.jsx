@@ -7,6 +7,8 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { useEffect, useState } from "react";
 import Setting from "./pages/Setting";
+import LoginPage from "./pages/login";
+import ProtectetRoute from "./components/ProtectetRoute";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -31,22 +33,34 @@ function App() {
   }, []);
   return (
     <>
-      <SideBar isShow={isSidebarOpen} />
-
-      <section
-        className={`transition-all duration-1000 ${
-          isSidebarOpen ? "ml-[254px]" : "ml-[0px]"
-        }`}
-      >
-        <Header />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/product" element={<Product />} />
-          <Route path="/setting" element={<Setting />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-        <Footer />
-      </section>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectetRoute>
+              <HomePage />
+            </ProtectetRoute>
+          }
+        />
+        <Route
+          path="/product"
+          element={
+            <ProtectetRoute>
+              <Product />
+            </ProtectetRoute>
+          }
+        />
+        <Route
+          path="/setting"
+          element={
+            <ProtectetRoute>
+              <Setting />
+            </ProtectetRoute>
+          }
+        />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
     </>
   );
 }
